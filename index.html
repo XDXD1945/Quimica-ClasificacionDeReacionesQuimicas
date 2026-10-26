@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperframe | Guía Interactiva de Reacciones Químicas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0b10;
+            --bg-secondary: #12141c;
+            --bg-card: #181b26;
+            --bg-card-hover: #1f2333;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 242, 254, 0.3);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            
+            --gradient-main: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+            --gradient-glow: 0 0 25px rgba(0, 242, 254, 0.15);
+            
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        code, pre, .chem-formula {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Background grid effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Header / Navbar */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 11, 16, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent-cyan);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 7rem 2rem 4rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size.size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 30%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        .concept-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-main);
+            opacity: 0.7;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-glow);
+            box-shadow: var(--gradient-glow);
+            background: var(--bg-card-hover);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Section Titles */
+        .section-header {
+            margin: 4rem 0 2rem 0;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+        }
+
+        /* Reactions Tabs / Accordion Container */
+        .reactions-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            min-height: 480px;
+        }
+
+        @media (max-width: 900px) {
+            .reactions-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tabs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            text-align: left;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            border-color: var(--border-glow);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .tab-content-pane {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 2.5rem;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .tab-content-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reaction-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .reaction-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .reaction-def {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .model-box {
+            background: var(--bg-primary);
+            border: 1px dashed var(--border-color);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .model-box span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .model-box code {
+            color: var(--accent-pink);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .examples-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .examples-list li {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--accent-purple);
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 0.95rem;
+        }
+
+        .subtypes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 600px) {
+            .subtypes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .subtype-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .subtype-card h4 {
+            color: var(--accent-amber);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        /* Visual Molecule Simulator (CSS Shapes) */
+        .molecule-visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .atom {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .atom-blue { background: var(--accent-blue); color: #000; }
+        .atom-red { background: var(--accent-pink); color: #fff; }
+        .atom-green { background: var(--accent-green); color: #000; }
+
+        .reaction-arrow {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .molecule-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        /* Interactive Quiz Section */
+        .quiz-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .quiz-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .equation-display {
+            font-size: 1.6rem;
+            text-align: center;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(0, 242, 254, 0.08);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .option-btn.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .quiz-feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            display: block;
+        }
+
+        .next-btn {
+            margin-top: 1.5rem;
+            width: 100%;
+            background: var(--gradient-main);
+            color: #000;
+            border: none;
+            padding: 0.9rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: none;
+        }
+
+        .next-btn:hover {
+            opacity: 0.9;
+            box-shadow: var(--gradient-glow);
+        }
+
+        .quiz-results {
+            text-align: center;
+            display: none;
+        }
+
+        .quiz-results h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-results p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .restart-btn {
+            background: var(--gradient-main);
+            color: #000;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4rem;
+        }
+
+        footer span {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Hyperframe / ChemStudy
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#conceptos" class="active">Conceptos</a></li>
+                <li><a href="#clasificacion">Clasificación</a></li>
+                <li><a href="#quiz">Práctica</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="conceptos" class="hero">
+            <h1>Clasificación de Reacciones Químicas</h1>
+            <p>Guía de estudio interactiva de alto rendimiento inspirada en Hyperframe. Domina los procesos de transformación de la materia y prepárate para tu prueba de química.</p>
+            
+            <div class="concept-cards-grid">
+                <div class="card">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="var(--accent-cyan)" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        ¿Qué es una Reacción?
+                    </h3>
+                    <p>Es un proceso químico donde los enlaces entre átomos se rompen y se forman nuevos enlaces, transformando completamente las sustancias iniciales (reactivos) en sustancias nuevas (productos).</p>
+                </div>
+                <div class="card">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="var(--accent-pink)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Conservación de la Masa
+                    </h3>
+                    <p>La materia no se crea ni se destruye, solo se transforma. El número de átomos de cada elemento químico debe ser exactamente igual tanto en los reactivos como en los productos (Balanceo).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Classification -->
+        <section id="clasificacion">
+            <div class="section-header">
+                <h2>Tipos de Reacciones Químicas</h2>
+                <p>Explora cada categoría detallada con modelos, ejemplos y representaciones visuales.</p>
+            </div>
+
+            <div class="reactions-container">
+                <!-- Navigation Tabs -->
+                <div class="tabs-list">
+                    <button class="tab-btn active" onclick="switchTab(event, 'synthesis')">
+                        A) Síntesis (Combinación)
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'decomposition')">
+                        B) Descomposición
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'single-disp')">
+                        C) Desplazamiento Simple
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'double-disp')">
+                        D) Doble Desplazamiento
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'combustion')">
+                        E) Combustión
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+
+                <!-- Panes -->
+                <div class="tab-content-area">
+                    <!-- Pane A -->
+                    <div id="synthesis" class="tab-content-pane active">
+                        <span class="reaction-badge">Categoría A</span>
+                        <h3 class="reaction-title">Reacciones de Síntesis (o Combinación)</h3>
+                        <p class="reaction-def">Dos o más sustancias simples se combinan y reaccionan para formar un único compuesto más complejo.</p>
+                        
+                        <div class="model-box">
+                            <span>Modelo general</span>
+                            <code>A + B → AB</code>
+                        </div>
+
+                        <div class="molecule-visualizer">
+                            <div class="molecule-group"><div class="atom atom-blue">A</div></div>
+                            <span class="reaction-arrow">+</span>
+                            <div class="molecule-group"><div class="atom atom-red">B</div></div>
+                            <span class="reaction-arrow">→</span>
+                            <div class="molecule-group">
+                                <div class="atom atom-blue">A</div>
+                                <div class="atom atom-red">B</div>
+                            </div>
+                        </div>
+
+                        <ul class="examples-list">
+                            <li><strong>Ejemplo Clásico:</strong> 2H₂ + O₂ → 2H₂O (Formación de agua)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pane B -->
+                    <div id="decomposition" class="tab-content-pane">
+                        <span class="reaction-badge">Categoría B</span>
+                        <h3 class="reaction-title">Reacciones de Descomposición</h3>
+                        <p class="reaction-def">Un compuesto único e inicial se divide en dos o más sustancias más simples, generalmente mediante aplicación de calor o energía.</p>
+                        
+                        <div class="model-box">
+                            <span>Modelo general</span>
+                            <code>AB → A + B</code>
+                        </div>
+
+                        <ul class="examples-list">
+                            <li>CaCO₃ → CaO + CO₂ (Descomposición térmica del carbonato de calcio)</li>
+                            <li>2H₂O → 2H₂ + O₂ (Electrólisis del agua)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pane C -->
+                    <div id="single-disp" class="tab-content-pane">
+                        <span class="reaction-badge">Categoría C</span>
+                        <h3 class="reaction-title">Reacciones de Desplazamiento Simple (Sustitución)</h3>
+                        <p class="reaction-def">Un elemento químico más reactivo desplaza y toma el lugar de otro menos reactivo que se encontraba formando parte de un compuesto.</p>
+                        
+                        <div class="model-box">
+                            <span>Modelo general</span>
+                            <code>A + BC → AC + B</code>
+                        </div>
+
+                        <ul class="examples-list">
+                            <li>Zn + 2HCl → ZnCl₂ + H₂ (El zinc desplaza al hidrógeno del ácido clorhídrico)</li>
+                            <li>Fe + CuSO₄ → FeSO₄ + Cu (El hierro desplaza al cobre)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pane D -->
+                    <div id="double-disp" class="tab-content-pane">
+                        <span class="reaction-badge">Categoría D</span>
+                        <h3 class="reaction-title">Reacciones de Doble Desplazamiento (Doble Sustitución)</h3>
+                        <p class="reaction-def">Los iones de dos compuestos distintos intercambian posiciones entre sí, originando dos compuestos nuevos diferentes.</p>
+                        
+                        <div class="model-box">
+                            <span>Modelo general</span>
+                            <code>AB + CD → AC + BD</code>
+                        </div>
+
+                        <ul class="examples-list">
+                            <li>Pb(NO₃)₂ + 2KI → PbI₂↓ + 2KNO₃ (Precipitación de yoduro de plomo)</li>
+                            <li>AgNO₃ + NaCl → AgCl↓ + NaNO₃</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pane E -->
+                    <div id="combustion" class="tab-content-pane">
+                        <span class="reaction-badge">Categoría E</span>
+                        <h3 class="reaction-title">Reacciones de Combustión</h3>
+                        <p class="reaction-def">Reacción química exotérmica rápida entre una sustancia combustible y el oxígeno, liberando gran cantidad de energía en forma de calor y luz.</p>
+                        
+                        <div class="model-box">
+                            <span>Modelo general</span>
+                            <code>Combustible + O₂ → CO₂ + H₂O + Energía</code>
+                        </div>
+
+                        <div class="subtypes-grid">
+                            <div class="subtype-card">
+                                <h4>Combustión Completa</h4>
+                                <p>Hay suficiente oxígeno. Produce dióxido de carbono (CO₂) y agua (H₂O).</p>
+                            </div>
+                            <div class="subtype-card">
+                                <h4>Combustión Incompleta</h4>
+                                <p>Falta de oxígeno. Produce monóxido de carbono (CO) y hollín.</p>
+                            </div>
+                        </div>
+
+                        <h4 style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">Ejemplos Balanceados:</h4>
+                        <ul class="examples-list">
+                            <li><strong>Metano:</strong> CH₄ + 2O₂ → CO₂ + 2H₂O</li>
+                            <li><strong>Propano:</strong> C₃H₈ + 5O₂ → 3CO₂ + 4H₂O</li>
+                            <li><strong>Butano:</strong> 2C₄H₁₀ + 13O₂ → 8CO₂ + 10H₂O</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz Section -->
+        <section id="quiz" class="quiz-section">
+            <div class="section-header" style="margin-top: 0;">
+                <h2>Quiz de Práctica Interactiva</h2>
+                <p>Pon a prueba tus conocimientos identificando el tipo de reacción química en cada ecuación.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div id="quiz-card-wrapper" class="quiz-card">
+                    <div class="quiz-progress">
+                        <span id="question-number">Pregunta 1 de 5</span>
+                        <span id="score-tracker">Aciertos: 0</span>
+                    </div>
+
+                    <div id="question-box">
+                        <div class="question-text">¿A qué tipo corresponde la siguiente ecuación?</div>
+                        <div id="equation-target" class="equation-display">2H₂ + O₂ → 2H₂O</div>
+
+                        <div class="options-grid" id="options-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <div id="quiz-feedback" class="quiz-feedback"></div>
+                        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Siguiente Pregunta →</button>
+                    </div>
+
+                    <div id="quiz-results" class="quiz-results">
+                        <h3>¡Quiz Completado!</h3>
+                        <p id="final-score-text">Has acertado 5 de 5 preguntas.</p>
+                        <button class="restart-btn" onclick="restartQuiz()">Reiniciar Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Diseñado con estilo <span>Hyperframe</span> para tu éxito académico. &copy; 2026</p>
+    </footer>
+
+    <!-- JavaScript Script -->
+    <script>
+        // Tabs functionality
+        function switchTab(evt, tabId) {
+            const panes = document.querySelectorAll('.tab-content-pane');
+            panes.forEach(pane => pane.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Quiz Data
+        const quizData = [
+            {
+                equation: "2H₂ + O₂ → 2H₂O",
+                answer: "Síntesis",
+                explanation: "Correcto. Dos sustancias simples (Hidrógeno y Oxígeno) se combinan para formar un compuesto complejo (Agua)."
+            },
+            {
+                equation: "2H₂O → 2H₂ + O₂",
+                answer: "Descomposición",
+                explanation: "Correcto. Un compuesto único (Agua) se divide en dos sustancias más simples (Hidrógeno y Oxígeno)."
+            },
+            {
+                equation: "AgNO₃ + NaCl → AgCl + NaNO₃",
+                answer: "Doble Desplazamiento",
+                explanation: "Correcto. Los iones de ambos compuestos intercambian parejas mutuamente para formar cloruro de plata y nitrato de sodio."
+            },
+            {
+                equation: "CH₄ + 2O₂ → CO₂ + 2H₂O",
+                answer: "Combustión",
+                explanation: "Correcto. Un hidrocarburo (combustible) reacciona con oxígeno produciendo dióxido de carbono, agua y energía."
+            },
+            {
+                equation: "Fe + CuSO₄ → FeSO₄ + Cu",
+                answer: "Desplazamiento Simple",
+                explanation: "Correcto. El hierro (Fe) desplaza al cobre (Cu) del sulfato de cobre debido a su mayor reactividad."
+            }
+        ];
+
+        const allOptions = ["Síntesis", "Descomposición", "Desplazamiento Simple", "Doble Desplazamiento", "Combustión"];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        const questionNumberEl = document.getElementById('question-number');
+        const scoreTrackerEl = document.getElementById('score-tracker');
+        const equationTargetEl = document.getElementById('equation-target');
+        const optionsGridEl = document.getElementById('options-grid');
+        const quizFeedbackEl = document.getElementById('quiz-feedback');
+        const nextBtnEl = document.getElementById('next-btn');
+        const questionBoxEl = document.getElementById('question-box');
+        const quizResultsEl = document.getElementById('quiz-results');
+        const finalScoreTextEl = document.getElementById('final-score-text');
+
+        function loadQuestion() {
+            answered = false;
+            quizFeedbackEl.className = "quiz-feedback";
+            quizFeedbackEl.style.display = "none";
+            nextBtnEl.style.display = "none";
+
+            const currentQ = quizData[currentQuestionIndex];
+            questionNumberEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            scoreTrackerEl.textContent = `Aciertos: ${score}`;
+            equationTargetEl.textContent = currentQ.equation;
+
+            optionsGridEl.innerHTML = "";
+            allOptions.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn";
+                btn.textContent = option;
+                btn.onclick = () => selectOption(option, btn);
+                optionsGridEl.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedOption, btnElement) {
+            if (answered) return;
+            answered = true;
+
+            const currentQ = quizData[currentQuestionIndex];
+            const allOptionBtns = optionsGridEl.querySelectorAll('.option-btn');
+
+            allOptionBtns.forEach(btn => {
+                if (btn.textContent === currentQ.answer) {
+                    btn.classList.add('correct');
+                } else if (btn === btnElement && selectedOption !== currentQ.answer) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            if (selectedOption === currentQ.answer) {
+                score++;
+                scoreTrackerEl.textContent = `Aciertos: ${score}`;
+                quizFeedbackEl.textContent = currentQ.explanation;
+                quizFeedbackEl.className = "quiz-feedback correct";
+            } else {
+                quizFeedbackEl.textContent = `Incorrecto. La respuesta correcta era: "${currentQ.answer}". ${currentQ.explanation}`;
+                quizFeedbackEl.className = "quiz-feedback incorrect";
+            }
+
+            quizFeedbackEl.style.display = "block";
+            nextBtnEl.style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            questionBoxEl.style.display = "none";
+            quizResultsEl.style.display = "block";
+            finalScoreTextEl.textContent = `Has acertado ${score} de ${quizData.length} preguntas correctamente.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizResultsEl.style.display = "none";
+            questionBoxEl.style.display = "block";
+            loadQuestion();
+        }
+
+        // Initialize quiz on load
+        window.onload = () => {
+            loadQuestion();
+        };
+
+        // Smooth scroll for nav links active state update on scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
